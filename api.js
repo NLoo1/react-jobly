@@ -33,7 +33,7 @@ class JoblyApi {
       throw Array.isArray(message) ? message : [message];
     }
   }
-
+  
   // Individual API routes
 
   /** Get details on a company by handle. */
@@ -43,7 +43,37 @@ class JoblyApi {
     return res.company;
   }
 
-  // obviously, you'll add a lot here ...
+  // Don't use these yet; need to add data
+  static async postCompany({ handle, name, description, numEmployees, logoUrl }) {
+    let res = await this.request(`companies/`, method='post', data={
+      { handle:handle, name:name, description: description, numEmployees:numEmployees, 
+        logoUrl:logoUrl }
+    );
+    return res.company;
+  }
+  static async postCompany({ handle, name, description, numEmployees, logoUrl }) {
+    let res = await this.request(`companies/`, method='patch', data={
+      { handle:handle, name:name, description: description, numEmployees:numEmployees, 
+        logoUrl:logoUrl }
+    );
+    return res.company;
+  }
+  static async deleteCompany(handle) {
+    let res = await this.request(`companies/${handle}`, method='delete');
+    return res.company;
+  }
+
+
+  // USERS
+  static async getUser(handle) {
+    let res = await this.request(`users/${handle}`);
+    return res.user;
+
+    // JOBS
+  }static async getJob(handle) {
+    let res = await this.request(`job/${handle}`);
+    return res.job;
+  }
 }
 
 // for now, put token ("testuser" / "password" on class)
