@@ -1,6 +1,14 @@
-nav {
+.navbar {
   background-color: black;
-  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+  height: 56px; 
+  padding: 0 1rem; 
+  margin: 0; 
+}
+
+.navbar-brand {
+  color: #f0f2f5 !important;
+  text-decoration: none;
+  line-height: 56px; 
 }
 
 .nav-item {
@@ -8,31 +16,28 @@ nav {
   text-align: center;
 }
 
-nav a {
-  color: #f0f2f5;
+.navbar-nav .nav-link {
+  color: #f0f2f5 !important;
   text-decoration: none;
+  line-height: 56px; 
 }
 
-nav a.active {
-  color: #f0f2f5;
+.navbar-nav .nav-link.active {
+  color: #f0f2f5 !important;
   font-weight: bold;
   border-bottom: 5px dotted;
   box-sizing: border-box;
 }
 
-nav a.active:hover {
+.navbar-nav .nav-link:hover {
+  text-decoration: none;
   color: #f0f2f5 !important;
 }
 
-nav a:hover {
-  text-decoration: none;
-  color: #f0f2f5;
+.navbar-nav .nav-link.active:hover {
+  color: #f0f2f5 !important;
 }
 
-nav a.active.navbar-brand {
-  border-bottom: none;
-}
-
-nav a:not(.navbar-brand):hover {
+.navbar-nav .nav-link:not(.navbar-brand):hover {
   font-weight: bold;
 }

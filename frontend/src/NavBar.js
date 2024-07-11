@@ -1,26 +1,30 @@
 import React from "react";
-import "./NavBar.css";
 import { NavLink } from "react-router-dom";
 import { Navbar, Nav, NavItem } from "reactstrap";
+import "./NavBar.css";
 
 function NavBar() {
   return (
     <div>
       <Navbar expand="md">
         <NavLink exact to="/" className="navbar-brand">
-          Snack or Booze
+          Jobly
         </NavLink>
-
-        <Nav className="ml-auto" navbar>
+        <Nav className="ml-auto navbar-nav" navbar>
           <NavItem>
-            {/* <NavLink to="/snacks">Snacks</NavLink> */}
+            <NavLink to="/users" className="nav-link">
+              Users
+            </NavLink>
           </NavItem>
           <NavItem>
-            {/* <NavLink to="/drinks">Drinks</NavLink> */}
+            <NavLink to="/companies" className="nav-link">
+              Companies
+            </NavLink>
           </NavItem>
-
           <NavItem>
-            {/* <NavLink to="/new">New item</NavLink> */}
+            <NavLink to="/jobs" className="nav-link">
+              Jobs
+            </NavLink>
           </NavItem>
         </Nav>
       </Navbar>
