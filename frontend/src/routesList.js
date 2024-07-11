@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import JoblyApi from "./api";
+import { Link } from "react-router-dom";
+
+// REFACTOR TO List, Detail, Card   
 
 export function List({ type }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -38,12 +41,12 @@ export function List({ type }) {
     }
 
     return (
-        <table>
+        <table className='table table-responsive table-striped table-dark'>
             <thead>
                 {type === 'companies' && (
                     <tr>
-                        <th>Company</th>
-                        <th>Number of employees</th>
+                        <th scope='col'>Company</th>
+                        <th scope='col'>Number of employees</th>
                     </tr>
                 )}
                 {type === 'jobs' && (
@@ -63,18 +66,18 @@ export function List({ type }) {
             </thead>
             <tbody>
                 {type === 'companies' && data.map((d) => (
-                    <tr key={d.name}>
-                        <td>{d.name}</td>
-                        <td>{d.numEmployees}</td>
-                    </tr>
+                    <Item data={d} type={type} />
                 ))}
                 {type === 'jobs' && data.map((d) => (
-                    <tr key={d.id}>
-                        <td>{d.id}</td>
-                        <td>{d.title}</td>
-                        <td>{d.salary}</td>
-                    </tr>
+                    <Item data={d} type={type} />
+                    // <tr key={d.id}>
+                    //     <td><Link to={'/jobs/' + d.id} >{d.id}</Link></td>
+                    //     <td>{d.title}</td>
+                    //     <td>{d.salary}</td>
+                    // </tr>
                 ))}
+
+
                 {type === 'users' && data.map((d) => (
                     <tr key={d.id}>
                         <td>{d.id}</td>
@@ -87,6 +90,36 @@ export function List({ type }) {
     );
 }
 
-export function Item() {
-    return null;
+// An individual company, user, or job
+export function Item(data, type) {
+
+    console.log(type)
+    switch (type) {
+        case 'companies':
+            return(
+                <tr>
+                    <td><Link to={'/companies/' + data.handle} >{data.name}</Link></td>
+                    <td>{data.numEmployees}</td> 
+                </tr>
+            )
+        case 'jobs':
+            return(
+                <tr>
+                    <td><Link to={'/jobs/' + data.id} >{data.id}</Link></td>
+                    <td>{data.salary}</td> 
+                </tr>
+            )
+            break;
+        case 'users':
+            break;
+        default:
+            console.log('Invalid type');
+            break;
+    }
+
+}
+
+// An individual company/user/job for their own URL
+export function Card(data){
+    return
 }
