@@ -1,8 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./Home";
-import Companies from "./Companies";
+import Page from "./Page";
 import NavBar from "./NavBar";
 import "./App.css";
+import LoginUser from "./LoginForm";
+import SignupUser from "./Signup";
 
 function App() {
   return (
@@ -14,11 +16,11 @@ function App() {
             <Route exact path="/" element={<Home />} />
 
 
-            <Route exact path="/companies" element={<Companies />} />
-            <Route exact path="/users" element={<div>Users Page</div>} />
-            <Route exact path="/jobs" element={<div>Jobs Page</div>} />
-            <Route exact path="/login" element={<div>Login Page</div>} />
-            <Route exact path="/signup" element={<div>Signup Page</div>} />
+            <Route exact path="/companies" element={<Page />} />
+            {/* <Route exact path="/users" element={<div>Users Page</div>} /> */}
+            <Route exact path="/jobs" element={<Page />} />
+            <Route exact path="/login" element={<LoginUser />} />
+            <Route exact path="/signup" element={<SignupUser /> }/>
             <Route exact path="/profile" element={<div>Profile Page</div>} />
 
 
