@@ -3,6 +3,8 @@ import { Card, CardBody, CardTitle } from "reactstrap";
 import { useLocation } from "react-router-dom";
 import { List } from "./routesList";
 import './Page.css'
+import ReactSearchBox from "react-search-box";
+
 
 
 // Generic component for both companies and pages
@@ -19,6 +21,7 @@ export default function Page() {
               Welcome to {location.slice(0,1).toUpperCase() + location.slice(1)}!
             </h3>
           </CardTitle>
+
         </CardBody>
       </Card>
       </section>

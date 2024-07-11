@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import JoblyApi from "./api";
 import { Link } from "react-router-dom";
-
-// REFACTOR TO List, Detail, Card   
+import ReactSearchBox from "react-search-box";
 
 export function List({ type }) {
     const [isLoading, setIsLoading] = useState(true);
     const [data, setData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         async function getItems() {
@@ -14,26 +15,43 @@ export function List({ type }) {
             switch (type) {
                 case 'companies':
                     items = await JoblyApi.getCompanies();
-                    items = items.sort((a, b) => a.id - b.id);
                     break;
                 case 'jobs':
                     items = await JoblyApi.getJobs();
-                    items = items.sort((a, b) => a.id - b.id);
                     break;
                 case 'users':
                     items = await JoblyApi.getUsers();
-                    items = items.sort((a, b) => a.id - b.id);
                     break;
                 default:
                     console.log('Invalid type');
                     items = [];
                     break;
             }
+            items = items.sort((a, b) => a.id - b.id);
             setData(items);
+            setFilteredData(items);
             setIsLoading(false);
         }
         getItems();
     }, [type]);
+
+    // Update filteredData when searchTerm changes
+    useEffect(() => {
+        const filtered = data.filter(item => {
+            // Ensure item and fields are defined before accessing them
+            const name = item.name ? item.name.toLowerCase() : '';
+            const title = item.title ? item.title.toLowerCase() : '';
+            const username = item.username ? item.username.toLowerCase() : '';
+    
+            return (
+                name.includes(searchTerm.toLowerCase()) ||
+                title.includes(searchTerm.toLowerCase()) ||
+                username.includes(searchTerm.toLowerCase())
+            );
+        });
+        setFilteredData(filtered);
+    }, [data, searchTerm]);
+    
 
     // While fetching data from API, show loading icon
     if (isLoading) {
@@ -41,85 +59,78 @@ export function List({ type }) {
     }
 
     return (
-        <table className='table table-responsive table-striped table-dark'>
-            <thead>
-                {type === 'companies' && (
-                    <tr>
-                        <th scope='col'>Company</th>
-                        <th scope='col'>Number of employees</th>
-                        <th scope='col'>Description</th>
-                    </tr>
-                )}
-                {type === 'jobs' && (
-                    <tr>
-                        <th>ID</th>
-                        <th>Title</th>
-                        <th>Salary</th>
-                        <th>Equity</th>
-                    </tr>
-                )}
-                {type === 'users' && (
-                    <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                    </tr>
-                )}
-            </thead>
-            <tbody>
-                {type === 'companies' && data.map((d) => (
-                    <Item data={d} type={type} />
-                ))}
-                {type === 'jobs' && data.map((d) => (
-                    <Item data={d} type={type} />
-                ))}
+        <section>
+           <ReactSearchBox
+    placeholder="Search..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e)}
+/>
 
-
-                {type === 'users' && data.map((d) => (
-                    <tr key={d.id}>
-                        <td>{d.id}</td>
-                        <td>{d.username}</td>
-                        <td>{d.email}</td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
+            <table className='table table-responsive table-striped table-dark'>
+                <thead>
+                    {type === 'companies' && (
+                        <tr>
+                            <th scope='col'>Company</th>
+                            <th scope='col'>Number of employees</th>
+                            <th scope='col'>Description</th>
+                        </tr>
+                    )}
+                    {type === 'jobs' && (
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Salary</th>
+                            <th>Equity</th>
+                        </tr>
+                    )}
+                    {type === 'users' && (
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                        </tr>
+                    )}
+                </thead>
+                <tbody>
+                    {filteredData.map((d) => (
+                        <Item key={d.id} data={d} type={type} />
+                    ))}
+                </tbody>
+            </table>
+        </section>
     );
 }
 
 // An individual company, user, or job
-export function Item({data, type}) {
-
-    console.log(type)
+export function Item({ data, type }) {
     switch (type) {
         case 'companies':
-            return(
+            return (
                 <tr>
-                    <td><Link to={'/companies/' + data.handle} >{data.name}</Link></td>
-                    <td>{data.numEmployees}</td> 
+                    <td><Link to={'/companies/' + data.handle}>{data.name}</Link></td>
+                    <td>{data.numEmployees}</td>
                     <td>{data.description}</td>
                 </tr>
-            )
+            );
         case 'jobs':
-            return(
+            return (
                 <tr>
-                    <td><Link to={'/jobs/' + data.id} >{data.id}</Link></td>
-                    <td>{data.title}</td> 
-                    <td>${data.salary}</td> 
-                    <td>${data.equity}</td> 
-                    <td></td>
+                    <td><Link to={'/jobs/' + data.id}>{data.id}</Link></td>
+                    <td>{data.title}</td>
+                    <td>${data.salary}</td>
+                    <td>${data.equity}</td>
                 </tr>
-            )
+            );
         case 'users':
-            break;
+            return (
+                <tr key={data.id}>
+                    <td>{data.id}</td>
+                    <td>{data.username}</td>
+                    <td>{data.email}</td>
+                </tr>
+            );
         default:
             console.log('Invalid type');
-            break;
+            return null;
     }
-
-}
-
-// An individual company/user/job for their own URL
-export function Card(data, type){
-    return
 }
