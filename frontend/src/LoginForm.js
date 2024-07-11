@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { CardBody, Card, CardTitle } from "reactstrap";
 
 const LoginUser = ({ login }) => {
   const INITIAL_STATE = {
@@ -27,9 +28,12 @@ const LoginUser = ({ login }) => {
   }
 
   return (
+    <Card>
+      <CardBody>
+        <CardTitle><h1>Log in here:</h1></CardTitle>
     <form onSubmit={handleSubmit}>
         {/* <h1></h1> */}
-        <div className="formGroup">
+        <div className="form-group p-2">
             <label htmlFor="username">Username: </label>
             <input
                 id="username"
@@ -38,10 +42,11 @@ const LoginUser = ({ login }) => {
                 placeholder="Enter username"
                 value={formData.username}
                 onChange={handleChange}
+                className='form-control'
             />
         </div>
         
-        <div className="formGroup">
+        <div className="form-group p-2">
             <label htmlFor="password">Password: </label>
             <input
                 id="password"
@@ -50,14 +55,17 @@ const LoginUser = ({ login }) => {
                 placeholder="Enter password"
                 value={formData.password}
                 onChange={handleChange}
+                className='form-control'
                 />
         </div>
       
 
       
       
-      <button>Log in</button>
+      <button type='submit' className='btn btn-primary p-2'>Log in</button>
     </form>
+    </CardBody>
+    </Card>
   )
 
 }

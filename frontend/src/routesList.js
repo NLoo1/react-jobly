@@ -47,6 +47,7 @@ export function List({ type }) {
                     <tr>
                         <th scope='col'>Company</th>
                         <th scope='col'>Number of employees</th>
+                        <th scope='col'>Description</th>
                     </tr>
                 )}
                 {type === 'jobs' && (
@@ -54,6 +55,7 @@ export function List({ type }) {
                         <th>ID</th>
                         <th>Title</th>
                         <th>Salary</th>
+                        <th>Equity</th>
                     </tr>
                 )}
                 {type === 'users' && (
@@ -70,11 +72,6 @@ export function List({ type }) {
                 ))}
                 {type === 'jobs' && data.map((d) => (
                     <Item data={d} type={type} />
-                    // <tr key={d.id}>
-                    //     <td><Link to={'/jobs/' + d.id} >{d.id}</Link></td>
-                    //     <td>{d.title}</td>
-                    //     <td>{d.salary}</td>
-                    // </tr>
                 ))}
 
 
@@ -91,7 +88,7 @@ export function List({ type }) {
 }
 
 // An individual company, user, or job
-export function Item(data, type) {
+export function Item({data, type}) {
 
     console.log(type)
     switch (type) {
@@ -100,16 +97,19 @@ export function Item(data, type) {
                 <tr>
                     <td><Link to={'/companies/' + data.handle} >{data.name}</Link></td>
                     <td>{data.numEmployees}</td> 
+                    <td>{data.description}</td>
                 </tr>
             )
         case 'jobs':
             return(
                 <tr>
                     <td><Link to={'/jobs/' + data.id} >{data.id}</Link></td>
-                    <td>{data.salary}</td> 
+                    <td>{data.title}</td> 
+                    <td>${data.salary}</td> 
+                    <td>${data.equity}</td> 
+                    <td></td>
                 </tr>
             )
-            break;
         case 'users':
             break;
         default:
@@ -120,6 +120,6 @@ export function Item(data, type) {
 }
 
 // An individual company/user/job for their own URL
-export function Card(data){
+export function Card(data, type){
     return
 }

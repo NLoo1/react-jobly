@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Card, CardBody, CardTitle } from "reactstrap";
 
 const SignupUser = ({ addUser }) => {
   const INITIAL_STATE = {
@@ -34,9 +35,12 @@ const SignupUser = ({ addUser }) => {
   }
 
   return (
+    <Card>
+      <CardBody>
+        <CardTitle><h1>Sign up here:</h1></CardTitle>
+
     <form onSubmit={handleSubmit}>
-        {/* <h1></h1> */}
-        <div className="formGroup">
+        <div className="form-group p-2">
             <label htmlFor="username">Username: </label>
             <input
                 id="username"
@@ -45,10 +49,11 @@ const SignupUser = ({ addUser }) => {
                 placeholder="Enter username"
                 value={formData.username}
                 onChange={handleChange}
+                className='form-control'
             />
         </div>
         
-        <div className="formGroup">
+        <div className="form-group p-2">
             <label htmlFor="password">Password: </label>
             <input
                 id="password"
@@ -57,10 +62,12 @@ const SignupUser = ({ addUser }) => {
                 placeholder="Enter password"
                 value={formData.password}
                 onChange={handleChange}
+                className='form-control'
+
                 />
         </div>
 
-        <div className="formGroup">
+        <div className="form-group p-2">
             <label htmlFor="confirmPassword">Re-enter password: </label>
             <input
                 id="confirmPassword"
@@ -69,14 +76,17 @@ const SignupUser = ({ addUser }) => {
                 placeholder="Re-enter password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
+                className='form-control'
                 />
         </div>
       
 
       
       
-      <button>Sign up</button>
+      <button type='submit' className='btn btn-primary p-2'>Sign up</button>
     </form>
+    </CardBody>
+    </Card>
   )
 
 }

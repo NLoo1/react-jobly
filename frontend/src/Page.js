@@ -16,8 +16,7 @@ export default function Page() {
         <CardBody className="text-center">
           <CardTitle>
             <h3 className="font-weight-bold">
-              Welcome to {location}!
-              
+              Welcome to {location.slice(0,1).toUpperCase() + location.slice(1)}!
             </h3>
           </CardTitle>
         </CardBody>
