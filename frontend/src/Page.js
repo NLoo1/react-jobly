@@ -7,9 +7,13 @@ import ReactSearchBox from "react-search-box";
 
 
 
-// Generic component for both companies and pages
+/**
+ * Generic Page component. Used to render all routes: Home, Users, Companies, Jobs
+ */
 export default function Page() {
   let location = useLocation()
+
+  // This will show a Welcome page dependent on the route
   location = location.pathname.split('/')[1]
   return (
     <div className="page" >
@@ -26,6 +30,7 @@ export default function Page() {
       </Card>
       </section>
       <hr />
+      
       <List type={location} />
     </div>
     

@@ -131,6 +131,13 @@ class JoblyApi {
     let res = await this.request(`jobs?title=${title}`);
     return res.jobs;
   }
+// Get all jobs matching a company.
+static async filterJobsByCompany(company_handle) {
+  let res = await this.request(`jobs`);
+  let filteredJobs = res.jobs.filter((e) => e.companyHandle === company_handle);
+  return filteredJobs;
+}
+
 
       /** Add a new job. */
   // TODO: add authentication

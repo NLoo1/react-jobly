@@ -4,6 +4,12 @@ import { Navbar, Nav, NavItem } from "reactstrap";
 import "./NavBar.css";
 import { useLocation } from "react-router-dom";
 
+
+/**
+ * NavBar
+ * 
+ * Navigation bar that persists between routes. Conditionally shows links depending on route
+ */
 function NavBar() {
   const location = useLocation();
   return (
@@ -17,8 +23,9 @@ function NavBar() {
         {/* Nav stuff */}
         <Nav className="ml-auto navbar-nav" navbar>
 
-        {/* ADD CONDITIONAL IF LOGGED IN */}
-          {/* Login */}
+        {/* TODO: ADD CONDITIONAL IF LOGGED IN */}
+          {/* Login 
+          Hide if user is logged in*/}
           {location.pathname !== "/login" && (
             <NavItem>
               <NavLink to="/login" className="nav-link">
@@ -27,7 +34,11 @@ function NavBar() {
             </NavItem>
           )}
 
-          {/* Signup */}
+
+
+          {/* Signup 
+            Hide this if a user is logged in.
+          */}
           {location.pathname !== "/signup" && (
             <NavItem>
               <NavLink to="/signup" className="nav-link">

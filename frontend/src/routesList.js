@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from "react";
 import JoblyApi from "./api";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useHistory } from "react-router-dom";
 import { CardBody, CardTitle, Card } from "reactstrap";
 
+
+/**
+ * List
+ * 
+ * Used for /companies, /jobs, and /users. This is the table.
+ * Data fetched is dependent on the location.
+ */
 export function List({ type }) {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
 
   const location = useLocation();
 
+  // Depending on type passed, fetches different data
   async function getItems() {
     let items;
     switch (type) {
@@ -26,11 +34,18 @@ export function List({ type }) {
         items = [];
         break;
     }
+
+    // Items are then sorted by id, if applicable
     items = items.sort((a, b) => a.id - b.id);
+
+    // Set data state here. data is then mapped as Items
     setData(items);
+
+    // Disable loading icon
     setIsLoading(false);
   }
 
+  // Upon first render, get the appropriate item
   useEffect(() => {
     getItems();
   }, [type]);
@@ -40,8 +55,12 @@ export function List({ type }) {
     return <p>Loading &hellip;</p>;
   }
 
+
+  // The actual content to return
   return (
     <section>
+
+      {/* Search bar. Items, location, and data are passed to redirect to appropriate route */}
       <Search getItems={getItems} location={location} setData={setData} />
 
       <table className="table table-responsive table-striped">
@@ -74,6 +93,8 @@ export function List({ type }) {
           )}
         </thead>
         <tbody>
+
+          {/* Each row in a List is considered an Item */}
           {data.map((d) => (
             <Item key={d.id} data={d} type={type} />
           ))}
@@ -83,8 +104,13 @@ export function List({ type }) {
   );
 }
 
-// An individual company, user, or job
-// A List will render several Items (i.e. Users, Companies, Jobs)
+/**
+ * Item
+ * 
+ * An individual company, user, or job.
+ * A List will render several Items (i.e. Users, Companies, Jobs)
+ */
+
 export function Item({ data, type }) {
   //  Rendered differently depending on the type of data passed
   switch (type) {
@@ -92,6 +118,7 @@ export function Item({ data, type }) {
       return (
         <tr>
           <td>
+            {/* Link to the company's card */}
             <Link to={"/companies/" + data.handle}>{data.name}</Link>
           </td>
           <td>{data.numEmployees}</td>
@@ -102,6 +129,7 @@ export function Item({ data, type }) {
       return (
         <tr>
           <td>
+            {/* Link to the job card */}
             <Link to={"/jobs/" + data.id}>{data.id}</Link>
           </td>
           <td>{data.title}</td>
@@ -109,6 +137,8 @@ export function Item({ data, type }) {
           <td>{data.equity}/1</td>
         </tr>
       );
+
+      /** This should NEVER be accessed by anyone but admin */
     case "users":
       return (
         <tr key={data.username}>
@@ -116,31 +146,46 @@ export function Item({ data, type }) {
           <td>{data.email}</td>
         </tr>
       );
+
+      // This should never happen
     default:
       console.log("Invalid type");
       return null;
   }
 }
 
-// Search bar. Rendered inside of List
+/**
+ * Search
+ * 
+ * Search bar rendered inside a List, above the table.
+ * Will update the table to match the search query.
+ * The entire table will return with an empty search query.
+ */
 export function Search({ getItems, location, setData }) {
   const [search, setSearch] = useState("");
 
   return (
     <section>
+
+      {/* This is the actual search bar */}
       <input
         type="text"
         placeholder="Search..."
         onChange={(e) => {
+          // Update search state after trimming for whitespace
           setSearch(e.target.value.trim());
         }}
       />
       <button
         className="btn btn-primary"
         onClick={() => {
+
+          // If the query is empty, just get all the items again
           if (search == "") return getItems();
           async function lookUp() {
             let searchTerm;
+
+            // Filter by location.
             switch (location.pathname) {
               case "/companies":
                 searchTerm = await JoblyApi.filterCompanies(search);
@@ -154,7 +199,7 @@ export function Search({ getItems, location, setData }) {
                 break;
               default:
                 break;
-            }
+          }
           }
           lookUp();
         }}
@@ -167,14 +212,16 @@ export function Search({ getItems, location, setData }) {
 
 export function CardComponent({ type }) {
   const [data, setData] = useState(null);
+  const [jobs, setJobs] = useState([])
   const param = useParams();
 
   useEffect(() => {
     async function fetchData() {
-      let fetchedData;
+      let fetchedData, fetchedJobs
       switch (type) {
         case "companies":
           fetchedData = await JoblyApi.getCompany(param.title);
+          fetchedJobs = await JoblyApi.filterJobsByCompany(fetchedData.handle)
           break;
         case "jobs":
           fetchedData = await JoblyApi.getJob(param.id);
@@ -187,6 +234,8 @@ export function CardComponent({ type }) {
           break;
       }
       setData(fetchedData);
+      fetchedJobs = fetchedJobs.sort((a, b) => a.id - b.id);
+      setJobs(fetchedJobs)
     }
 
     fetchData();
@@ -203,11 +252,13 @@ export function CardComponent({ type }) {
           <h1>{data.title || data.username || data.name}</h1>
         </CardTitle>
 
+      {/* TODO: Show all jobs listed by this company. */}
         {type == "companies" && (
-          <table className="table table-responsive">
+          <section>
+            <table className="table table-responsive">
             <thead>
               <tr>
-                <td>Number of employees</td>
+                <td>Employees</td>
                 <td>Description</td>
               </tr>
             </thead>
@@ -218,6 +269,25 @@ export function CardComponent({ type }) {
                 </tr>
             </tbody>
           </table>
+
+          <table className='table table-responsive'>
+            <thead>
+              <tr>
+                <td>Job ID</td>
+                <td>Title</td>
+                <td>Salary</td>
+                <td>Equity</td>
+              </tr>
+            </thead>
+            <tbody>
+            {jobs.map((d) => (
+            <Item key={d.id} data={d} type='jobs' />
+          ))}
+            </tbody>
+
+          </table>
+          </section>
+          
         )}
 
         {type == "users" && (
@@ -243,6 +313,9 @@ export function CardComponent({ type }) {
           </table>
         )}
       </CardBody>
+
+      {/* TODO: Refactor to go back via history
+      If a user routes to a company via a job, they should be able to back to the job, NOT the companies page */}
       <button className='btn'><Link to={'/' + type} >Go back</Link></button>
     </Card>
   );
