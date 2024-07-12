@@ -5,7 +5,6 @@ import { Link, useLocation } from "react-router-dom";
 export function List({ type }) {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
-  const [search, setSearch] = useState("");
 
   const location = useLocation();
 
@@ -42,41 +41,16 @@ export function List({ type }) {
 
   return (
     <section>
-      <input
-        type="text"
-        placeholder="Search..."
-        onChange={(e) => {
-          setSearch(e.target.value.trim());
-        }}
+      <Search
+        getItems={getItems}
+        location={location}
+        setData={setData}
       />
-      <button
-        onClick={() => {
-          console.log(search);
-          console.log(location.pathname)
-          if(search == '') return getItems()
-          async function lookUp() {
-            let searchTerm;
-            switch (location.pathname) {
-              case "/companies":
-                searchTerm = await JoblyApi.filterCompanies(search);
-                setData(searchTerm)
-                console.log(searchTerm);
-              case "/jobs":
-                break;
-              case "/users":
-                break;
-              default:
-                break;
-            }
-          }
-          lookUp()
-        }}
-      >
-        Submit
-      </button>
 
       <table className="table table-responsive table-striped">
         <thead>
+
+          {/* If route is /companies, show companies table */}
           {type === "companies" && (
             <tr>
               <th scope="col">Company</th>
@@ -84,6 +58,8 @@ export function List({ type }) {
               <th scope="col">Description</th>
             </tr>
           )}
+
+          {/* If route is /jobs, show jobs table */}
           {type === "jobs" && (
             <tr>
               <th>ID</th>
@@ -92,6 +68,8 @@ export function List({ type }) {
               <th>Equity</th>
             </tr>
           )}
+
+          {/* If route is /users, show users table */}
           {type === "users" && (
             <tr>
               <th>ID</th>
@@ -111,7 +89,10 @@ export function List({ type }) {
 }
 
 // An individual company, user, or job
+// A List will render several Items (i.e. Users, Companies, Jobs)
 export function Item({ data, type }) {
+
+    //  Rendered differently depending on the type of data passed
   switch (type) {
     case "companies":
       return (
@@ -146,4 +127,46 @@ export function Item({ data, type }) {
       console.log("Invalid type");
       return null;
   }
+}
+
+// Search bar. Rendered inside of List
+export function Search({ getItems, location, setData }) {
+  const [search, setSearch] = useState("");
+
+  return (
+    <section>
+      <input
+        type="text"
+        placeholder="Search..."
+        onChange={(e) => {
+          setSearch(e.target.value.trim());
+        }}
+      />
+      <button
+        onClick={() => {
+          if (search == "") return getItems();
+          async function lookUp() {
+            let searchTerm;
+            switch (location.pathname) {
+              case "/companies":
+                searchTerm = await JoblyApi.filterCompanies(search);
+                setData(searchTerm);
+                break;
+              case "/jobs":
+                searchTerm = await JoblyApi.filterJobs(search);
+                setData(searchTerm);
+                break;
+              case "/users":
+                break;
+              default:
+                break;
+            }
+          }
+          lookUp();
+        }}
+      >
+        Submit
+      </button>
+    </section>
+  );
 }
