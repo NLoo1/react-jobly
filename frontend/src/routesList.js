@@ -38,16 +38,26 @@ export function List({ type }) {
     // Update filteredData when searchTerm changes
     useEffect(() => {
         const filtered = data.filter(item => {
-            // Ensure item and fields are defined before accessing them
-            const name = item.name ? item.name.toLowerCase() : '';
-            const title = item.title ? item.title.toLowerCase() : '';
-            const username = item.username ? item.username.toLowerCase() : '';
+            if(item.title) {
+                // Jobs
+                const title = item.title ? item.title.toLowerCase() : '';
+                const id = item.id || '0';
     
-            return (
-                name.includes(searchTerm.toLowerCase()) ||
-                title.includes(searchTerm.toLowerCase()) ||
-                username.includes(searchTerm.toLowerCase())
-            );
+                return (
+                    title.includes(searchTerm.toLowerCase()) ||
+                    id == (searchTerm.toLowerCase()) 
+                );
+            }
+            else {
+                // Companies
+                const name = item.name ? item.name.toLowerCase() : '';
+                const description = item.description ? item.description.toLowerCase() : '';
+                return (
+                    name.includes(searchTerm.toLowerCase()) ||
+                    description.includes(searchTerm.toLowerCase()) 
+                );
+            }
+            
         });
         setFilteredData(filtered);
     }, [data, searchTerm]);
@@ -66,7 +76,7 @@ export function List({ type }) {
     onChange={(e) => setSearchTerm(e)}
 />
 
-            <table className='table table-responsive table-striped table-dark'>
+            <table className='table table-responsive table-striped'>
                 <thead>
                     {type === 'companies' && (
                         <tr>
@@ -118,7 +128,7 @@ export function Item({ data, type }) {
                     <td><Link to={'/jobs/' + data.id}>{data.id}</Link></td>
                     <td>{data.title}</td>
                     <td>${data.salary}</td>
-                    <td>${data.equity}</td>
+                    <td>{data.equity}/1</td>
                 </tr>
             );
         case 'users':

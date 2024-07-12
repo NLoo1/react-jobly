@@ -6,6 +6,7 @@ main {
   padding-top: 15vh;
   height: calc(100vh - 56px); /* router view - navbar height */
   overflow: scroll;
+  background-color: skyblue;
 }
 
 .card {
@@ -18,6 +19,7 @@ main {
 }
 
 
-/* ul{
-    list-style-type: none;
-} */
+.col .home{
+  /* background-color: red; */
+  top: 25%;
+}
