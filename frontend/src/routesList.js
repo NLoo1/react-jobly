@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import JoblyApi from "./api";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
+import { CardBody, CardTitle, Card } from "reactstrap";
 
 export function List({ type }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -41,15 +42,10 @@ export function List({ type }) {
 
   return (
     <section>
-      <Search
-        getItems={getItems}
-        location={location}
-        setData={setData}
-      />
+      <Search getItems={getItems} location={location} setData={setData} />
 
       <table className="table table-responsive table-striped">
         <thead>
-
           {/* If route is /companies, show companies table */}
           {type === "companies" && (
             <tr>
@@ -72,7 +68,6 @@ export function List({ type }) {
           {/* If route is /users, show users table */}
           {type === "users" && (
             <tr>
-              <th>ID</th>
               <th>Username</th>
               <th>Email</th>
             </tr>
@@ -91,8 +86,7 @@ export function List({ type }) {
 // An individual company, user, or job
 // A List will render several Items (i.e. Users, Companies, Jobs)
 export function Item({ data, type }) {
-
-    //  Rendered differently depending on the type of data passed
+  //  Rendered differently depending on the type of data passed
   switch (type) {
     case "companies":
       return (
@@ -117,8 +111,7 @@ export function Item({ data, type }) {
       );
     case "users":
       return (
-        <tr key={data.id}>
-          <td>{data.id}</td>
+        <tr key={data.username}>
           <td>{data.username}</td>
           <td>{data.email}</td>
         </tr>
@@ -143,6 +136,7 @@ export function Search({ getItems, location, setData }) {
         }}
       />
       <button
+        className="btn btn-primary"
         onClick={() => {
           if (search == "") return getItems();
           async function lookUp() {
@@ -168,5 +162,88 @@ export function Search({ getItems, location, setData }) {
         Submit
       </button>
     </section>
+  );
+}
+
+export function CardComponent({ type }) {
+  const [data, setData] = useState(null);
+  const param = useParams();
+
+  useEffect(() => {
+    async function fetchData() {
+      let fetchedData;
+      switch (type) {
+        case "companies":
+          fetchedData = await JoblyApi.getCompany(param.title);
+          break;
+        case "jobs":
+          fetchedData = await JoblyApi.getJob(param.id);
+          break;
+        case "users":
+          fetchedData = await JoblyApi.getUsers(param.username);
+          break;
+        default:
+          fetchedData = null;
+          break;
+      }
+      setData(fetchedData);
+    }
+
+    fetchData();
+  }, [type, param]);
+
+  if (!data) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <Card>
+      <CardBody>
+        <CardTitle>
+          <h1>{data.title || data.username || data.name}</h1>
+        </CardTitle>
+
+        {type == "companies" && (
+          <table className="table table-responsive">
+            <thead>
+              <tr>
+                <td>Number of employees</td>
+                <td>Description</td>
+              </tr>
+            </thead>
+            <tbody>
+            <tr>
+                    <td>{data.numEmployees}</td>
+                    <td>{data.description}</td>
+                </tr>
+            </tbody>
+          </table>
+        )}
+
+        {type == "users" && (
+            <h1>{data.username}</h1>
+        )}
+
+        {type == "jobs" && (
+          <table className="table table-responsive">
+            <thead>
+              <tr>
+                <td>Salary</td>
+                <td>Equity</td>
+                <td>Company</td>
+              </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{data.salary}</td>
+                    <td>{data.equity}</td>
+                    <td><Link to={'/companies/' + data.company.handle} >{data.company.name}</Link></td>
+                </tr>
+            </tbody>
+          </table>
+        )}
+      </CardBody>
+      <button className='btn'><Link to={'/' + type} >Go back</Link></button>
+    </Card>
   );
 }

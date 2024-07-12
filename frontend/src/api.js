@@ -56,10 +56,10 @@ class JoblyApi {
 
   /** Add a new company. */
   // TODO: add authentication
-  static async postCompany({ handle, name, description, numEmployees, logoUrl }) {
-    let res = await this.request(`companies/`, { handle, name, description, numEmployees, logoUrl }, 'post');
-    return res.company;
-  }
+  // static async postCompany({ handle, name, description, numEmployees, logoUrl }) {
+  //   let res = await this.request(`companies/`, { handle, name, description, numEmployees, logoUrl }, 'post');
+  //   return res.company;
+  // }
 
   /** Update details of a company by handle. */
   // static async patchCompany({ handle, name, description, numEmployees, logoUrl }) {
@@ -88,6 +88,13 @@ class JoblyApi {
     return res.users;
   }
 
+    /** Add a new user. */
+  // TODO: add authentication
+  // static async postUser({FILL THIS OUT LATER}) {
+  //   let res = await this.request(`users/`, { }, 'post');
+  //   return res.user;
+  // }
+
   // Get all users matching an id, partial matches included.
   // static async filterUsers(id) {
   //   let res = await this.request(`users?id=${id}`);
@@ -95,8 +102,8 @@ class JoblyApi {
   // }
 
   /** Update details of a user by id. */
-  // static async patchUser({ id, name, description, numEmployees, logoUrl }) {
-  //   let res = await this.request(`users/`, { id, name, description, numEmployees, logoUrl }, 'patch');
+  // static async patchUser({ }) {
+  //   let res = await this.request(`users/`, {  }, 'patch');
   //   return res.company;
   // }
 
@@ -125,9 +132,16 @@ class JoblyApi {
     return res.jobs;
   }
 
+      /** Add a new job. */
+  // TODO: add authentication
+  // static async postJob({FILL THIS OUT LATER}) {
+  //   let res = await this.request(`jobs/`, { }, 'post');
+  //   return res.job;
+  // }
+
     /** Update details of a user by id. */
-  // static async patchUser({ id, name, description, numEmployees, logoUrl }) {
-  //   let res = await this.request(`jobs/`, { id, name, description, numEmployees, logoUrl }, 'patch');
+  // static async patchJob({ FILL THIS OUT LATER}) {
+  //   let res = await this.request(`jobs/`, { }, 'patch');
   //   return res.user;
   // }
 

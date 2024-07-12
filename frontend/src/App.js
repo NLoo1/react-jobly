@@ -5,6 +5,7 @@ import NavBar from "./NavBar";
 import "./App.css";
 import LoginUser from "./LoginForm";
 import SignupUser from "./Signup";
+import { CardComponent } from "./routesList";
 
 function App() {
   return (
@@ -17,17 +18,16 @@ function App() {
 
 
             <Route exact path="/companies" element={<Page />} />
-            {/* <Route exact path="/users" element={<div>Users Page</div>} /> */}
+            <Route exact path="/users" element={<Page />} />
             <Route exact path="/jobs" element={<Page />} />
             <Route exact path="/login" element={<LoginUser />} />
             <Route exact path="/signup" element={<SignupUser /> }/>
             <Route exact path="/profile" element={<div>Profile Page</div>} />
 
 
-            <Route exact path="/companies/:id" element={<div>Company Detail</div>} />
-            <Route exact path="/users/:id" element={<div>User Detail</div>} />
-            <Route exact path="/jobs/:id" element={<div>Job Detail</div>} />
-            <Route exact path="/auth/:id" element={<div>Auth Detail</div>} />
+            <Route exact path="/companies/:title" element={<CardComponent type="companies" />} />
+            <Route exact path="/users/:username" element={<CardComponent type="users" />} />
+            <Route exact path="/jobs/:id" element={<CardComponent type="jobs" />} />
 
             {/* If route not found navigate to root */}
             <Route path="*" element={<Navigate to="/" />} />
