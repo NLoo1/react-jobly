@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import JoblyApi from "./api";
 import { Link } from "react-router-dom";
-import ReactSearchBox from "react-search-box";
 
 export function List({ type }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -35,32 +34,6 @@ export function List({ type }) {
         getItems();
     }, [type]);
 
-    // Update filteredData when searchTerm changes
-    useEffect(() => {
-        const filtered = data.filter(item => {
-            if(item.title) {
-                // Jobs
-                const title = item.title ? item.title.toLowerCase() : '';
-                const id = item.id || '0';
-    
-                return (
-                    title.includes(searchTerm.toLowerCase()) ||
-                    id == (searchTerm.toLowerCase()) 
-                );
-            }
-            else {
-                // Companies
-                const name = item.name ? item.name.toLowerCase() : '';
-                const description = item.description ? item.description.toLowerCase() : '';
-                return (
-                    name.includes(searchTerm.toLowerCase()) ||
-                    description.includes(searchTerm.toLowerCase()) 
-                );
-            }
-            
-        });
-        setFilteredData(filtered);
-    }, [data, searchTerm]);
     
 
     // While fetching data from API, show loading icon
@@ -70,12 +43,6 @@ export function List({ type }) {
 
     return (
         <section>
-           <ReactSearchBox
-    placeholder="Search..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e)}
-/>
-
             <table className='table table-responsive table-striped'>
                 <thead>
                     {type === 'companies' && (
