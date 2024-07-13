@@ -6,8 +6,46 @@ import "./App.css";
 import LoginUser from "./LoginForm";
 import SignupUser from "./Signup";
 import { CardComponent } from "./routesList";
+import { useState } from "react";
+import JoblyApi from "./api";
 
 function App() {
+  const [currentUser, setCurrentUser] = useState(null)
+  const [token, setToken] = useState(null)
+
+
+  // {username, password, firstName, lastName, email}
+  async function addUser(user) {
+    console.log("f")
+    console.log(user)
+    try {
+      const resp = await JoblyApi.register({
+        username: user.username,
+        password: user.password,
+        firstName: user.firstname, // Ensure these match your API endpoint
+        lastName: user.lastname,
+        email: user.email
+      });
+      // Handle the response as needed
+      return resp;
+    } catch (error) {
+      console.error("Error registering user:", error);
+      // Handle error appropriately (e.g., show error message)
+      throw error;
+    }
+  }
+  
+
+  // async function login({user}){
+  //   const resp = await JoblyApi.login
+  // }
+
+  async function logout(){
+    setCurrentUser(null)
+    setToken(null)
+  }
+
+
   return (
     <div className="app">
       <BrowserRouter>
@@ -21,7 +59,7 @@ function App() {
             <Route exact path="/users" element={<Page />} />
             <Route exact path="/jobs" element={<Page />} />
             <Route exact path="/login" element={<LoginUser />} />
-            <Route exact path="/signup" element={<SignupUser /> }/>
+            <Route exact path="/signup" element={<SignupUser addUser={addUser} /> }/>
             <Route exact path="/profile" element={<div>Profile Page</div>} />
 
 

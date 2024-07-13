@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import JoblyApi from "./api";
-import { Link, useLocation, useParams, useHistory } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { CardBody, CardTitle, Card } from "reactstrap";
 
 /**
@@ -78,6 +78,7 @@ export function List({ type }) {
               <th>Title</th>
               <th>Salary</th>
               <th>Equity</th>
+              <th></th>
             </tr>
           )}
 
@@ -129,9 +130,15 @@ export function Item({ data, type }) {
             <Link to={"/jobs/" + data.id}>{data.id}</Link>
           </td>
           <td>{data.title}</td>
-          <td>${data.salary}</td>
-          <td>{data.equity}/1</td>
+          <td>{data?.salary || "N/A"}</td>
+          <td>{data?.equity || "N/A"}/1</td>
+          <td>
+        <ApplyButton />
+
+          </td>
+          
         </tr>
+        
       );
 
     /** This should NEVER be accessed by anyone but admin */
@@ -175,7 +182,10 @@ export function Search({ getItems, location, setData }) {
         className="btn btn-primary"
         onClick={() => {
           // If the query is empty, just get all the items again
-          if (search == "") return getItems();
+          if (search == ""){
+            console.debug("Search bar is empty")
+            return getItems();
+          }
           async function lookUp() {
             let searchTerm;
 
@@ -204,15 +214,25 @@ export function Search({ getItems, location, setData }) {
   );
 }
 
+/**
+ * CardComponent
+ * 
+ * Shows details about a job, company, or user on its own route
+ * If the card is for a company, it will also list associated jobs
+ */
 export function CardComponent({ type }) {
   const [data, setData] = useState(null);
   const [jobs, setJobs] = useState([]);
   const param = useParams();
 
+  // Fetch data depending on the type. 
+  // Use params to get the actual company name, username, or job ID
   useEffect(() => {
     async function fetchData() {
       let fetchedData, fetchedJobs;
       switch (type) {
+
+        // Company cards will also show jobs
         case "companies":
           fetchedData = await JoblyApi.getCompany(param.title);
           fetchedJobs = await JoblyApi.filterJobsByCompany(fetchedData.handle);
@@ -230,7 +250,8 @@ export function CardComponent({ type }) {
       }
       setData(fetchedData);
 
-      // Sort job IDs if applicable
+      // Sort if applicable
+      // Sort by job ID, username, and then company name
       try {
         fetchedJobs = fetchedJobs.sort(
           ((a, b) => a.id - b.id) ||
@@ -245,6 +266,7 @@ export function CardComponent({ type }) {
     fetchData();
   }, [type, param]);
 
+  // Loading
   if (!data) {
     return <div>Loading...</div>;
   }
@@ -256,7 +278,9 @@ export function CardComponent({ type }) {
           <h1>{data.title || data.username || data.name}</h1>
         </CardTitle>
 
-        {/* TODO: Show all jobs listed by this company. */}
+
+        {/* Company card */}
+
         {type == "companies" && (
           <section>
             <table className="table table-responsive">
@@ -279,7 +303,7 @@ export function CardComponent({ type }) {
                 <tr>
                   <td>Job ID</td>
                   <td>Title</td>
-                  <td>Salary</td>
+                  <td>Salary (USD)</td>
                   <td>Equity</td>
                 </tr>
               </thead>
@@ -292,9 +316,12 @@ export function CardComponent({ type }) {
           </section>
         )}
 
+        {/* User card */}
         {type == "users" && <h1>{data.username}</h1>}
 
+        {/* Job card */}
         {type == "jobs" && (
+          <section>
           <table className="table table-responsive">
             <thead>
               <tr>
@@ -328,8 +355,13 @@ export function CardComponent({ type }) {
               </tr>
             </tbody>
 
-            <button className="btn btn-primary">Apply</button>
+            
           </table>
+          {/* <button className="btn btn-primary" onClick={(e) => 
+          {console.log(data)}
+        }>Apply</button> */}
+        <ApplyButton />
+          </section>
         )}
       </CardBody>
 
@@ -341,3 +373,23 @@ export function CardComponent({ type }) {
     </Card>
   );
 }
+
+// Button to apply for jobs.
+// TODO: Actually apply
+export function ApplyButton(){
+  const [applied, setApplied] = useState(false);
+
+  const handleClick = (e) => {
+    setApplied(true);
+  };
+
+  return (
+    <button
+      className={`btn btn-primary ${applied ? 'btn-danger' : ''}`}
+      onClick={handleClick}
+      disabled={applied}
+    >
+      {applied ? 'Applied' : 'Apply'}
+    </button>
+  );
+};

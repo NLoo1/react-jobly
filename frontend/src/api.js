@@ -76,6 +76,11 @@ class JoblyApi {
     /** ----------------------------------- USERS ------------------------------------------------------------ */
 
 
+  static async login(username, password) {
+    let res = await this.request(`auth/token`, {username, password}, 'post');
+    return res;
+  }
+
   // Get a user by id
   static async getUser(id) {
     let res = await this.request(`users/${id}`);
@@ -89,28 +94,35 @@ class JoblyApi {
   }
 
     /** Add a new user. */
+  static async register({username, password, firstName, lastName, email}) {
+    console.log("please")
+    console.log({username, password, firstName, lastName, email})
+    let res = await this.request(`auth/register`, {username, password, firstName, lastName, email}, 'post');
+    return res.user;
+  }
+
   // TODO: add authentication
-  // static async postUser({FILL THIS OUT LATER}) {
-  //   let res = await this.request(`users/`, { }, 'post');
-  //   return res.user;
-  // }
+  static async postUserAdmin({user, token}){
+    let res = await this.request(`users/`, {user, token}, 'post');
+    return res.user;
+  }
 
   // Get all users matching an id, partial matches included.
-  // static async filterUsers(id) {
-  //   let res = await this.request(`users?id=${id}`);
-  //   return res.users;
-  // }
+  static async filterUsers(id) {
+    let res = await this.request(`users?id=${id}`);
+    return res.users;
+  }
 
   /** Update details of a user by id. */
-  // static async patchUser({ }) {
-  //   let res = await this.request(`users/`, {  }, 'patch');
-  //   return res.company;
-  // }
+  static async patchUser({ }) {
+    let res = await this.request(`users/`, {  }, 'patch');
+    return res.company;
+  }
 
-  // static async deleteUser(id) {
-  //   let res = await this.request(`users/${id}`, {}, 'delete');
-  //   return res;
-  // }
+  static async deleteUser(id) {
+    let res = await this.request(`users/${id}`, {}, 'delete');
+    return res;
+  }
 
     /** ----------------------------------- JOBS ------------------------------------------------------------ */
 
@@ -139,24 +151,24 @@ static async filterJobsByCompany(company_handle) {
 }
 
 
-      /** Add a new job. */
+    /** Add a new job. */
   // TODO: add authentication
-  // static async postJob({FILL THIS OUT LATER}) {
-  //   let res = await this.request(`jobs/`, { }, 'post');
-  //   return res.job;
-  // }
+  static async postJob({ title, salary, equity, companyHandle }) {
+    let res = await this.request(`jobs/`, { title, salary, equity, companyHandle }, 'post');
+    return res.job;
+  }
 
     /** Update details of a user by id. */
-  // static async patchJob({ FILL THIS OUT LATER}) {
-  //   let res = await this.request(`jobs/`, { }, 'patch');
-  //   return res.user;
-  // }
+  static async patchJob({title, salary, equity}) {
+    let res = await this.request(`jobs/`, {title, salary, equity}, 'patch');
+    return res.user;
+  }
 
   // Delete a job by ID.
-  // static async deleteJob(id) {
-  //   let res = await this.request(`jobs/${id}`, {}, 'delete');
-  //   return res;
-  // }
+  static async deleteJob(id) {
+    let res = await this.request(`jobs/${id}`, {}, 'delete');
+    return res;
+  }
 }
 
 // For now, put token ("testuser" / "password" on class)
