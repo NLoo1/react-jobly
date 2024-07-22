@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { CardBody, Card, CardTitle } from "reactstrap";
 
 const LoginUser = ({ login }) => {
@@ -7,6 +8,8 @@ const LoginUser = ({ login }) => {
     password: '',
   }
   const [formData, setFormData] = useState(INITIAL_STATE);
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(formData => ({
@@ -14,16 +17,15 @@ const LoginUser = ({ login }) => {
       [name]: value
     }))
   }
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if(formData.username.trim() !== '' 
-    && formData.password.trim() !== '' )
-    {
-        login({ ...formData });
-        setFormData(INITIAL_STATE)
-    }
-    else{ 
-        alert("Something is wrong")
+    if(formData.username.trim() !== '' && formData.password.trim() !== '' ) {
+        await login({ ...formData });
+        setFormData(INITIAL_STATE);
+        navigate("/");
+    } else { 
+        alert("Incorrect username or password");
     }
   }
 
@@ -31,9 +33,8 @@ const LoginUser = ({ login }) => {
     <Card>
       <CardBody>
         <CardTitle><h1>Log in here:</h1></CardTitle>
-    <form onSubmit={handleSubmit}>
-        {/* <h1></h1> */}
-        <div className="form-group p-2">
+        <form onSubmit={handleSubmit}>
+          <div className="form-group p-2">
             <label htmlFor="username">Username: </label>
             <input
                 id="username"
@@ -44,9 +45,8 @@ const LoginUser = ({ login }) => {
                 onChange={handleChange}
                 className='form-control'
             />
-        </div>
-        
-        <div className="form-group p-2">
+          </div>
+          <div className="form-group p-2">
             <label htmlFor="password">Password: </label>
             <input
                 id="password"
@@ -56,19 +56,13 @@ const LoginUser = ({ login }) => {
                 value={formData.password}
                 onChange={handleChange}
                 className='form-control'
-                />
-        </div>
-      
-
-      
-      
-      <button type='submit' className='btn btn-primary p-2'>Log in</button>
-    </form>
-    </CardBody>
+            />
+          </div>
+          <button type='submit' className='btn btn-primary p-2'>Log in</button>
+        </form>
+      </CardBody>
     </Card>
   )
-
 }
 
 export default LoginUser;
-

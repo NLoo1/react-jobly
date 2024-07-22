@@ -6,62 +6,91 @@ import "./App.css";
 import LoginUser from "./LoginForm";
 import SignupUser from "./Signup";
 import { CardComponent } from "./routesList";
-import { useState } from "react";
+import { useState, React, Fragment, useEffect } from "react";
 import JoblyApi from "./api";
+import { Profile } from "./Profile";
+
 
 function App() {
-  const [currentUser, setCurrentUser] = useState(null)
-  const [token, setToken] = useState(null)
+  const [currentUser, setCurrentUser] = useState(null);
+  const [token, setToken] = useState(null);
 
+  // // TODO: From server, set state for current user
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get('https://api.example.com/data');
+  //       setData(response.data);
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   // {username, password, firstName, lastName, email}
   async function addUser(user) {
-    console.log("f")
-    console.log(user)
     try {
       const resp = await JoblyApi.register({
         username: user.username,
         password: user.password,
-        firstName: user.firstname, // Ensure these match your API endpoint
+        firstName: user.firstname, 
         lastName: user.lastname,
         email: user.email
       });
-      // Handle the response as needed
-      return resp;
+
+      setToken(resp.token);
+      setCurrentUser(resp.username);
+      console.log(`Successfully registered ${resp.username}!`);
     } catch (error) {
       console.error("Error registering user:", error);
-      // Handle error appropriately (e.g., show error message)
       throw error;
     }
   }
-  
 
-  // async function login({user}){
-  //   const resp = await JoblyApi.login
-  // }
-
-  async function logout(){
-    setCurrentUser(null)
-    setToken(null)
+  async function login({ username, password }) {
+    try {
+      const resp = await JoblyApi.login(username, password);
+      console.log(resp)
+      setToken(resp.token);
+      setCurrentUser(username);
+      console.log("Successfully logged in!");
+      // localStorage.user = username
+      // localStorage.isAdmin = resp.isAdmin
+    } catch (e) {
+      console.error("Could not login: " + e);
+    }
   }
 
+  async function logout() {
+    setCurrentUser(null);
+    setToken(null);
+    localStorage.clear()
+  }
 
   return (
     <div className="app">
       <BrowserRouter>
-        <NavBar />
+        <NavBar currentUser={currentUser} logout={logout} />
         <main>
           <Routes>
             <Route exact path="/" element={<Home />} />
-
-
             <Route exact path="/companies" element={<Page />} />
             <Route exact path="/users" element={<Page />} />
             <Route exact path="/jobs" element={<Page />} />
-            <Route exact path="/login" element={<LoginUser />} />
-            <Route exact path="/signup" element={<SignupUser addUser={addUser} /> }/>
-            <Route exact path="/profile" element={<div>Profile Page</div>} />
 
+            {currentUser == null ? (
+              <Fragment>
+                <Route exact path="/login" element={<LoginUser login={login} />} />
+                <Route exact path="/signup" element={<SignupUser addUser={addUser} />} />
+              </Fragment>
+            ) : (
+              <Fragment>
+                <Route exact path="/profile" element={<Profile currentUser={currentUser} token={token}/>} />
+                <Route exact path="/logout" element={<Navigate to="/" replace onClick={logout} />} />
+              </Fragment>
+            )}
 
             <Route exact path="/companies/:title" element={<CardComponent type="companies" />} />
             <Route exact path="/users/:username" element={<CardComponent type="users" />} />

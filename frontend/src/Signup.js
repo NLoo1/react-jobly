@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardBody, CardTitle } from "reactstrap";
+import { useNavigate } from "react-router-dom";
+
 
 const SignupUser = ({ addUser }) => {
   const INITIAL_STATE = {
@@ -12,6 +14,7 @@ const SignupUser = ({ addUser }) => {
   };
 
   const [formData, setFormData] = useState(INITIAL_STATE);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,7 +42,10 @@ const SignupUser = ({ addUser }) => {
     // Call addUser with form data
     try {
       await addUser(formData);
+      // window.location.href = '/'
+      navigate('/')
       setFormData(INITIAL_STATE); // Clear form after successful submission
+      
     } catch (error) {
       console.error("Error adding user:", error);
       // Handle error appropriately (e.g., show error message)

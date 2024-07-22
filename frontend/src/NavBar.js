@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { Navbar, Nav, NavItem } from "reactstrap";
 import "./NavBar.css";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 /**
@@ -10,8 +10,16 @@ import { useLocation } from "react-router-dom";
  * 
  * Navigation bar that persists between routes. Conditionally shows links depending on route
  */
-function NavBar() {
+function NavBar({currentUser, logout}) {
+
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <div>
       {/* Brand name */}
@@ -23,10 +31,9 @@ function NavBar() {
         {/* Nav stuff */}
         <Nav className="ml-auto navbar-nav" navbar>
 
-        {/* TODO: ADD CONDITIONAL IF LOGGED IN */}
           {/* Login 
           Hide if user is logged in*/}
-          {location.pathname !== "/login" && (
+          {location.pathname !== "/login" && currentUser == null && (
             <NavItem>
               <NavLink to="/login" className="nav-link">
                 Login
@@ -39,10 +46,28 @@ function NavBar() {
           {/* Signup 
             Hide this if a user is logged in.
           */}
-          {location.pathname !== "/signup" && (
+          {location.pathname !== "/signup" && currentUser==null && (
             <NavItem>
-              <NavLink to="/signup" className="nav-link">
+              <NavLink to='/signup' className="nav-link">
                 Sign up
+              </NavLink>
+            </NavItem>
+          )}
+
+          {/* Logout */}
+          {location.pathname !== "/logout" && currentUser && (
+            <NavItem>
+              <span onClick={handleLogout} className="nav-link" style={{ cursor: 'pointer' }}>
+              Logout
+              </span>
+            </NavItem>
+          )}
+          
+          {/* Profile */}
+          {location.pathname !== "/profile" && currentUser && (
+            <NavItem>
+              <NavLink to='/profile' className="nav-link" >
+              Profile
               </NavLink>
             </NavItem>
           )}

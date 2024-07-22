@@ -14,13 +14,14 @@ class JoblyApi {
   // the token for interacting with the API will be stored here.
   static token;
 
-  static async request(endpoint, data = {}, method = "get") {
+  static async request(endpoint, data = {}, method = "get", token="") {
     console.debug("API Call:", endpoint, data, method);
 
     // There are multiple ways to pass an authorization token, this is how you pass it in the header.
     // This has been provided to show you another way to pass the token. You are only expected to read this code for this project.
     const url = `${BASE_URL}/${endpoint}`;
-    const headers = { Authorization: `Bearer ${JoblyApi.token}` };
+    // const headers = { Authorization: `Bearer ${JoblyApi.token}` };
+    const headers = { Authorization: `Bearer ${token}` };
     const params = method === "get" ? data : {};
 
     try {
@@ -56,22 +57,22 @@ class JoblyApi {
 
   /** Add a new company. */
   // TODO: add authentication
-  // static async postCompany({ handle, name, description, numEmployees, logoUrl }) {
-  //   let res = await this.request(`companies/`, { handle, name, description, numEmployees, logoUrl }, 'post');
-  //   return res.company;
-  // }
+  static async postCompany({ handle, name, description, numEmployees, logoUrl }) {
+    let res = await this.request(`companies/`, { handle, name, description, numEmployees, logoUrl }, 'post');
+    return res.company;
+  }
 
   /** Update details of a company by handle. */
-  // static async patchCompany({ handle, name, description, numEmployees, logoUrl }) {
-  //   let res = await this.request(`companies/${handle}`, { handle, name, description, numEmployees, logoUrl }, 'patch');
-  //   return res.company;
-  // }
+  static async patchCompany({ handle, name, description, numEmployees, logoUrl }) {
+    let res = await this.request(`companies/${handle}`, { handle, name, description, numEmployees, logoUrl }, 'patch');
+    return res.company;
+  }
 
   /** Delete a company by handle. */
-  // static async deleteCompany(handle) {
-  //   let res = await this.request(`companies/${handle}`, {}, 'delete');
-  //   return res.company;
-  // }
+  static async deleteCompany(handle) {
+    let res = await this.request(`companies/${handle}`, {}, 'delete');
+    return res.company;
+  }
 
     /** ----------------------------------- USERS ------------------------------------------------------------ */
 
@@ -82,9 +83,9 @@ class JoblyApi {
   }
 
   // Get a user by id
-  static async getUser(id) {
-    let res = await this.request(`users/${id}`);
-    return res.user;
+  static async getUser(username, token) {
+    let res = await this.request(`users/${username}`, {}, "get", {token});
+    return res
   }
 
   // Get ALL users.
@@ -95,10 +96,8 @@ class JoblyApi {
 
     /** Add a new user. */
   static async register({username, password, firstName, lastName, email}) {
-    console.log("please")
-    console.log({username, password, firstName, lastName, email})
     let res = await this.request(`auth/register`, {username, password, firstName, lastName, email}, 'post');
-    return res.user;
+    return res
   }
 
   // TODO: add authentication
