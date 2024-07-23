@@ -12,8 +12,8 @@ import { Profile } from "./Profile";
 
 
 function App() {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [currentUser, setCurrentUser] = useState(localStorage.user || null);
+  const [token, setToken] = useState(localStorage.token || null);
 
   // // TODO: From server, set state for current user
   // useEffect(() => {
@@ -42,6 +42,7 @@ function App() {
 
       setToken(resp.token);
       setCurrentUser(resp.username);
+      JoblyApi.token = resp.token
       console.log(`Successfully registered ${resp.username}!`);
     } catch (error) {
       console.error("Error registering user:", error);
@@ -56,7 +57,9 @@ function App() {
       setToken(resp.token);
       setCurrentUser(username);
       console.log("Successfully logged in!");
-      // localStorage.user = username
+      localStorage.user = username
+      localStorage.token = resp.token
+      JoblyApi.token = resp.token
       // localStorage.isAdmin = resp.isAdmin
     } catch (e) {
       console.error("Could not login: " + e);
@@ -66,6 +69,7 @@ function App() {
   async function logout() {
     setCurrentUser(null);
     setToken(null);
+    JoblyApi.token = null
     localStorage.clear()
   }
 
@@ -87,7 +91,7 @@ function App() {
               </Fragment>
             ) : (
               <Fragment>
-                <Route exact path="/profile" element={<Profile currentUser={currentUser} token={token}/>} />
+                <Route ex act path="/profile" element={<Profile currentUser={currentUser} token={token}/>} />
                 <Route exact path="/logout" element={<Navigate to="/" replace onClick={logout} />} />
               </Fragment>
             )}

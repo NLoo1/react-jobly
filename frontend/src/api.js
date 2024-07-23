@@ -14,13 +14,11 @@ class JoblyApi {
   // the token for interacting with the API will be stored here.
   static token;
 
-  static async request(endpoint, data = {}, method = "get", token="") {
+  static async request(endpoint, data = {}, method = "get", token=JoblyApi.token) {
     console.debug("API Call:", endpoint, data, method);
-
     // There are multiple ways to pass an authorization token, this is how you pass it in the header.
     // This has been provided to show you another way to pass the token. You are only expected to read this code for this project.
     const url = `${BASE_URL}/${endpoint}`;
-    // const headers = { Authorization: `Bearer ${JoblyApi.token}` };
     const headers = { Authorization: `Bearer ${token}` };
     const params = method === "get" ? data : {};
 
@@ -84,7 +82,7 @@ class JoblyApi {
 
   // Get a user by id
   static async getUser(username, token) {
-    let res = await this.request(`users/${username}`, {}, "get", {token});
+    let res = await this.request(`users/${username}`, {}, "get", token)
     return res
   }
 

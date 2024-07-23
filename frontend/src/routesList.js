@@ -220,7 +220,7 @@ export function Search({ getItems, location, setData }) {
  * Shows details about a job, company, or user on its own route
  * If the card is for a company, it will also list associated jobs
  */
-export function CardComponent({ type }) {
+export function CardComponent({ type, user }) {
   const [data, setData] = useState(null);
   const [jobs, setJobs] = useState([]);
   const param = useParams();
@@ -242,8 +242,9 @@ export function CardComponent({ type }) {
           fetchedJobs = await JoblyApi.filterJobsByCompany(fetchedData.handle);
           break;
         case "users":
-          fetchedData = await JoblyApi.getUsers(param.username);
-          break;
+          fetchedData = await JoblyApi.getUser(param.username || user, localStorage.token);
+          fetchedData = fetchedData.user
+          break;  
         default:
           fetchedData = null;
           break;
@@ -317,7 +318,28 @@ export function CardComponent({ type }) {
         )}
 
         {/* User card */}
-        {type == "users" && <h1>{data.username}</h1>}
+        {type == "users" && (<section>
+          <table className="table table-responsive">
+            <thead>
+              <tr>
+                <td>First Name</td>
+                <td>Last name</td>
+                <td>Email</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{data.firstName}</td>
+                <td>{data.lastName}</td>
+                <td>{data.email}</td>
+                
+              </tr>
+            </tbody>
+
+            
+          </table>
+
+          </section>)}
 
         {/* Job card */}
         {type == "jobs" && (
@@ -357,9 +379,7 @@ export function CardComponent({ type }) {
 
             
           </table>
-          {/* <button className="btn btn-primary" onClick={(e) => 
-          {console.log(data)}
-        }>Apply</button> */}
+
         <ApplyButton />
           </section>
         )}
@@ -368,7 +388,19 @@ export function CardComponent({ type }) {
       {/* TODO: Refactor to go back via history
       If a user routes to a company via a job, they should be able to back to the job, NOT the companies page */}
       <button className="btn">
-        <Link to={"/" + type}>Go back</Link>
+
+        {/* Go to Users list if you're an admin */}
+        {type =='users' && localStorage.isAdmin=='true' && 
+        <Link to={"/" + type}>All users</Link>
+}
+        {type == 'users' && 
+        <Link to={'/'}>Home</Link>
+        }
+
+        {type !== 'users' && 
+        <Link to={'/' + type} >Go back</Link>
+
+}
       </button>
     </Card>
   );
