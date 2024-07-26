@@ -1,20 +1,37 @@
 import React, { useState } from "react";
 import { Card, CardBody, CardTitle } from "reactstrap";
+import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import JoblyApi from "./api";
+
 import { useNavigate } from "react-router-dom";
 
+const EditUser = ({ editUser, currentUser,token}) => {
 
-const SignupUser = ({ addUser }) => {
+  const params = useParams()
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [userData, setUserData] = useState(null)
+
+  const navigate = useNavigate();
+
+  useEffect( () => {
+        async function getProfile(){
+            const resp = await JoblyApi.getUser(currentUser, token)
+            setUserData(resp)
+        }
+        getProfile()
+        setIsLoaded(true)
+        }
+    , [isLoaded])
+
+
   const INITIAL_STATE = {
-    username: '',
-    password: '',
-    confirmPassword: '',
-    firstname: '',
-    lastname: '',
-    email: ''
+    firstname: userData?.user.firstname || '',
+    lastname: userData?.user.lastname || '',
+    email: userData?.user.email || ''
   };
 
   const [formData, setFormData] = useState(INITIAL_STATE);
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,8 +46,6 @@ const SignupUser = ({ addUser }) => {
     
     // Validate form data
     if (
-      formData.username.trim() === '' ||
-      formData.password.trim() === '' ||
       formData.firstname.trim() === '' ||
       formData.lastname.trim() === '' ||
       formData.email.trim() === ''
@@ -44,45 +59,33 @@ const SignupUser = ({ addUser }) => {
       return;
     }
   
-    // Call addUser with form data
     try {
-      await addUser(formData);
+      // console.log(params)
+      await editUser(formData, params.username);
+      setFormData(INITIAL_STATE); // Clear form after successful submission
+      alert(`Successfully changed profile for ${params.username}`)
       // window.location.href = '/'
       navigate('/')
-      setFormData(INITIAL_STATE); // Clear form after successful submission
       
     } catch (error) {
-      console.error("Error adding user:", error);
+      console.error("Error editing user:", error);
       // Handle error appropriately (e.g., show error message)
-      alert("Failed to register user");
+      alert("Failed to edit user");
     }
   };
 
   return (
     <Card>
       <CardBody>
-        <CardTitle><h1>Sign up here:</h1></CardTitle>
+        <CardTitle><h1>Change profile:</h1></CardTitle>
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group p-2">
-            <label htmlFor="username">Username: </label>
-            <input
-              id="username"
-              type="text"
-              name="username"
-              placeholder="Enter username"
-              value={formData.username}
-              onChange={handleChange}
-              className='form-control'
-            />
-          </div>
-
           <div className="form-group p-2">
             <label htmlFor="firstname">First name: </label>
             <input
               id="firstname"
               type="text"
-              name="firstname"  // Correct name attribute
+              name="firstname"
               placeholder="Enter first name"
               value={formData.firstname}
               onChange={handleChange}
@@ -93,9 +96,9 @@ const SignupUser = ({ addUser }) => {
           <div className="form-group p-2">
             <label htmlFor="lastname">Last name: </label>
             <input
-              id="lastname"
+              id="lastName"
               type="text"
-              name="lastname"  // Correct name attribute
+              name="lastname" 
               placeholder="Enter last name"
               value={formData.lastname}
               onChange={handleChange}
@@ -115,38 +118,12 @@ const SignupUser = ({ addUser }) => {
               className='form-control'
             />
           </div>
-          
-          <div className="form-group p-2">
-            <label htmlFor="password">Password: </label>
-            <input
-              id="password"
-              type="password"
-              name="password"
-              placeholder="Enter password"
-              value={formData.password}
-              onChange={handleChange}
-              className='form-control'
-            />
-          </div>
 
-          <div className="form-group p-2">
-            <label htmlFor="confirmPassword">Re-enter password: </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              name="confirmPassword"
-              placeholder="Re-enter password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className='form-control'
-            />
-          </div>
-
-          <button type='submit' className='btn btn-primary p-2'>Sign up</button>
+          <button type='submit' className='btn btn-primary p-2'>Confirm changes</button>
         </form>
       </CardBody>
     </Card>
   );
 };
 
-export default SignupUser;
+export default EditUser;

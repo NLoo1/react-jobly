@@ -10,6 +10,11 @@ import { CardBody, CardTitle, Card } from "reactstrap";
  * Data fetched is dependent on the location.
  */
 export function List({ type }) {
+
+  // For jobs
+  if(!localStorage.applied || localStorage.applied.length == 0) localStorage.applied = []
+  const [jobsApplied, setJobsApplied] = useState(localStorage.applied || [])
+
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
 
@@ -26,7 +31,7 @@ export function List({ type }) {
         items = await JoblyApi.getJobs();
         break;
       case "users":
-        items = await JoblyApi.getUsers();
+        items = await JoblyApi.getUsers(localStorage.token);
         break;
       default:
         console.log("Invalid type");
@@ -93,7 +98,7 @@ export function List({ type }) {
         <tbody>
           {/* Each row in a List is considered an Item */}
           {data.map((d) => (
-            <Item key={d.id} data={d} type={type} />
+            <Item key={d.id} data={d} type={type} jobsApplied={jobsApplied} />
           ))}
         </tbody>
       </table>
@@ -108,7 +113,8 @@ export function List({ type }) {
  * A List will render several Items (i.e. Users, Companies, Jobs)
  */
 
-export function Item({ data, type }) {
+export function Item({ data, type, jobsApplied='' }) {
+
   //  Rendered differently depending on the type of data passed
   switch (type) {
     case "companies":
@@ -133,7 +139,9 @@ export function Item({ data, type }) {
           <td>{data?.salary || "N/A"}</td>
           <td>{data?.equity || "N/A"}/1</td>
           <td>
-        <ApplyButton />
+
+
+          {jobsApplied.includes(data.id) ? (<td>Already applied!</td>) : (<ApplyButton id={data.id}/>)}
 
           </td>
           
@@ -220,7 +228,7 @@ export function Search({ getItems, location, setData }) {
  * Shows details about a job, company, or user on its own route
  * If the card is for a company, it will also list associated jobs
  */
-export function CardComponent({ type, user }) {
+export function CardComponent({ type, user, jobsApplied }) {
   const [data, setData] = useState(null);
   const [jobs, setJobs] = useState([]);
   const param = useParams();
@@ -310,7 +318,7 @@ export function CardComponent({ type, user }) {
               </thead>
               <tbody>
                 {jobs.map((d) => (
-                  <Item key={d.id} data={d} type="jobs" />
+                  <Item key={d.id} data={d} type="jobs" jobsApplied={jobsApplied} />
                 ))}
               </tbody>
             </table>
@@ -380,7 +388,6 @@ export function CardComponent({ type, user }) {
             
           </table>
 
-        <ApplyButton />
           </section>
         )}
       </CardBody>
@@ -391,16 +398,22 @@ export function CardComponent({ type, user }) {
 
         {/* Go to Users list if you're an admin */}
         {type =='users' && localStorage.isAdmin=='true' && 
-        <Link to={"/" + type}>All users</Link>
+        <Link to={"/" + type}>All users<br/></Link>
 }
         {type == 'users' && 
-        <Link to={'/'}>Home</Link>
+        <Link to={'/'}>Home<br/></Link>
         }
 
         {type !== 'users' && 
-        <Link to={'/' + type} >Go back</Link>
-
+        <Link to={'/' + type} >Go back<br/></Link>
 }
+
+        {(localStorage.user == data.username || localStorage.isAdmin) && type=='users' && 
+          <Link to={'/users/' + data.username + '/edit'}>Edit profile<br/></Link>
+        }
+        
+
+
       </button>
     </Card>
   );
@@ -408,20 +421,32 @@ export function CardComponent({ type, user }) {
 
 // Button to apply for jobs.
 // TODO: Actually apply
-export function ApplyButton(){
+export function ApplyButton(id){ 
   const [applied, setApplied] = useState(false);
 
   const handleClick = (e) => {
+    const id = e.target.id
     setApplied(true);
+    console.log("APPLIED FOR ")
+    console.log(id)
+
+    // let jobs = localStorage.jobsApplie
+    localStorage.setItem('applied', JSON.stringify([...localStorage.applied, id]))
   };
 
   return (
+    <div>
     <button
       className={`btn btn-primary ${applied ? 'btn-danger' : ''}`}
       onClick={handleClick}
       disabled={applied}
+      id={id.id}
     >
       {applied ? 'Applied' : 'Apply'}
     </button>
+    </div>
+
+
+    
   );
 };

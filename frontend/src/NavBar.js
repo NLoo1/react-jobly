@@ -17,6 +17,8 @@ function NavBar({currentUser, logout}) {
 
   const handleLogout = () => {
     logout();
+
+    // Maybe change this later
     navigate('/');
   };
 
@@ -73,7 +75,7 @@ function NavBar({currentUser, logout}) {
           )}
 
           {/* Companies */}
-          {location.pathname !== "/companies" && (
+          {location.pathname !== "/companies" && localStorage.token &&  (
             <NavItem>
               <NavLink to="/companies" className="nav-link">
                 Companies
@@ -82,10 +84,19 @@ function NavBar({currentUser, logout}) {
           )}
 
           {/* Jobs */}
-          {location.pathname !== "/jobs" && (
+          {location.pathname !== "/jobs" && localStorage.token && (
             <NavItem>
               <NavLink to="/jobs" className="nav-link">
                 Jobs
+              </NavLink>
+            </NavItem>
+          )}
+          
+          {/* Usrrs ADMIN ONLY */}
+          {location.pathname !== "/users" && localStorage.isAdmin &&  (
+            <NavItem>
+              <NavLink to="/users" className="nav-link">
+                Users
               </NavLink>
             </NavItem>
           )}

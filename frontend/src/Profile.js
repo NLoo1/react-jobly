@@ -26,7 +26,6 @@ export function Profile({currentUser, token}){
         <section>
             {isLoaded && userData ? 
             <section>
-                {/* {console.log(userData)} */}
 
 
                 <CardComponent type="users" user={userData.user.username} />

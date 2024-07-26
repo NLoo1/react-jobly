@@ -87,8 +87,8 @@ class JoblyApi {
   }
 
   // Get ALL users.
-  static async getUsers() {
-    let res = await this.request(`users/`);
+  static async getUsers(token) {
+    let res = await this.request(`users/`, {}, 'get', token);
     return res.users;
   }
 
@@ -111,8 +111,8 @@ class JoblyApi {
   }
 
   /** Update details of a user by id. */
-  static async patchUser({ }) {
-    let res = await this.request(`users/`, {  }, 'patch');
+  static async patchUser(data, username, token) {
+    let res = await this.request(`users/${username}`, data, 'patch', token);
     return res.company;
   }
 
